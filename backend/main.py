@@ -58,24 +58,6 @@ feature_extractor = FeatureExtractor(sr=16000)
 voice_classifier = VoiceClassifier()
 explainer = VoiceExplainer()
 
-# Serve static files
-# Find the absolute path to the frontend directory
-frontend_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
-if os.path.exists(frontend_path):
-    app.mount("/static", StaticFiles(directory=frontend_path), name="static")
-
-    @app.get("/")
-    async def read_index():
-        return FileResponse(os.path.join(frontend_path, "index.html"))
-
-    # Also serve other html files at root level for convenience
-    @app.get("/{page}.html")
-    async def read_html(page: str):
-        file_path = os.path.join(frontend_path, f"{page}.html")
-        if os.path.exists(file_path):
-            return FileResponse(file_path)
-        raise HTTPException(status_code=404, detail="Page not found")
-
 
 # Request/Response models
 class VoiceDetectionRequest(BaseModel):
@@ -233,7 +215,7 @@ async def shutdown_event():
 
 
 # Health check endpoint
-@app.get("/")
+@app.get("/api/health")
 async def root():
     """Health check endpoint"""
     return {
@@ -599,6 +581,12 @@ async def get_prediction_history(
             detail="Failed to retrieve prediction history"
         )
 
+# Serve static files
+# This is placed at the end so it doesn't intercept API routes
+frontend_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
+if os.path.exists(frontend_path):
+    # Mount frontend files at root
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
 
 
 if __name__ == "__main__":
