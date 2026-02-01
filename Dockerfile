@@ -23,9 +23,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose the port the app runs on
-# Hugging Face Spaces defaults to 7860
-ENV PORT=7860
-EXPOSE 7860
+# Standard port for Koyeb/Render
+ENV PORT=8000
+EXPOSE 8000
 
 # Run the application
 CMD ["python", "backend/main.py"]
