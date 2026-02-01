@@ -581,6 +581,37 @@ async def get_prediction_history(
             detail="Failed to retrieve prediction history"
         )
 
+# explicit routes for all html pages to ensure they work on HF
+@app.get("/login")
+@app.get("/login.html")
+async def login_page():
+    return FileResponse(os.path.join(frontend_path, "login.html"))
+
+@app.get("/register")
+@app.get("/register.html")
+async def register_page():
+    return FileResponse(os.path.join(frontend_path, "register.html"))
+
+@app.get("/dashboard")
+@app.get("/dashboard.html")
+async def dashboard_page():
+    return FileResponse(os.path.join(frontend_path, "dashboard.html"))
+
+@app.get("/upload")
+@app.get("/upload.html")
+async def upload_page():
+    return FileResponse(os.path.join(frontend_path, "upload.html"))
+
+@app.get("/result")
+@app.get("/result.html")
+async def result_page():
+    return FileResponse(os.path.join(frontend_path, "result.html"))
+
+@app.get("/history")
+@app.get("/history.html")
+async def history_page():
+    return FileResponse(os.path.join(frontend_path, "history.html"))
+
 # Serve static files
 # This is placed at the end so it doesn't intercept API routes
 frontend_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
