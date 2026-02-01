@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+pydantic
+python-multipart
+pymongo
+python-dotenv
+librosa
+soundfile
+numpy
+tensorflow
+pydub
+pyjwt
+bcrypt
+httpx

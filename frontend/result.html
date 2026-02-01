@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results - AI Voice Detection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css?v=5">
+    <script src="theme.js?v=4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200"
+        style="background: var(--nav-bg); border-color: var(--card-border);">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="flex items-center space-x-2 hover:opacity-80 transition">
+                    <i class="fas fa-wave-square text-blue-600 text-2xl"></i>
+                    <span class="text-xl font-bold text-gray-800" style="color: var(--text-color);">AI Voice
+                        Detection</span>
+                </a>
+                <div id="navLinks" class="flex items-center space-x-4">
+                    <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <a href="dashboard.html" class="text-gray-600 hover:text-blue-600 font-medium"
+                        style="color: var(--text-muted);">Dashboard</a>
+                    <button id="logoutBtn" onclick="logout()"
+                        class="text-red-500 hover:text-red-700 font-medium">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-12">
+        <div class="max-w-3xl mx-auto fade-in">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-gray-900 mb-3">Analysis Results</h1>
+                <p class="text-gray-600">Here's what we found about your audio</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mb-6">
+                <div id="resultContent">
+                    <!-- Status Badge -->
+                    <div class="text-center mb-8">
+                        <div id="predictionResult" class="text-2xl font-bold mb-2 gradient-text">
+                            Analyzing...
+                        </div>
+                    </div>
+
+                    <!-- Confidence Score -->
+                    <div class="mb-8">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-600 font-medium">Confidence Score</span>
+                            <span id="confidenceScore" class="text-2xl font-bold text-gray-800">--%</span>
+                        </div>
+                        <div class="confidence-bar">
+                            <div id="confidenceBarFill" class="confidence-fill"></div>
+                        </div>
+                    </div>
+
+                    <!-- Explainability Panel -->
+                    <details class="explainability-panel" open>
+                        <summary>🔍 Analysis Details</summary>
+                        <div class="explanation-content">
+                            <div class="explanation-item">
+                                <strong>Pitch Stability</strong>
+                                <p id="pitchExplanation">Analyzing pitch variations...</p>
+                            </div>
+                            <div class="explanation-item">
+                                <strong>Spectral Consistency</strong>
+                                <p id="spectralExplanation">Checking frequency patterns...</p>
+                            </div>
+                            <div class="explanation-item">
+                                <strong>Energy Dynamics</strong>
+                                <p id="energyExplanation">Measuring volume fluctuations...</p>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- Action Buttons -->
+                    <div class="grid grid-cols-2 gap-4 mt-8">
+                        <button onclick="window.location.href='dashboard.html'"
+                            class="w-full bg-gray-100 text-gray-700 font-semibold py-3 rounded-lg hover:bg-gray-200 transition">
+                            <i class="fas fa-home mr-2"></i>Dashboard
+                        </button>
+                        <button id="tryAgainBtn" onclick="window.location.href='upload.html'"
+                            class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition shadow-lg hover:shadow-xl">
+                            Analyze Another
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Raw JSON Toggle -->
+                <div class="mt-8 pt-6 border-t border-gray-100">
+                    <details>
+                        <summary class="text-sm text-gray-500 cursor-pointer hover:text-blue-600 transition">
+                            View Raw JSON Response
+                        </summary>
+                        <pre id="jsonOutput"
+                            class="mt-4 p-4 bg-gray-50 rounded-lg text-xs overflow-x-auto text-gray-600 font-mono"></pre>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        // Check auth
+        if (!localStorage.getItem('access_token')) {
+            document.getElementById('navLinks').innerHTML = `
+                <a href="login.html" class="text-gray-600 hover:text-blue-600 font-medium">Login</a>
+                <a href="register.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Register</a>
+            `;
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('user_email');
+            localStorage.removeItem('api_key');
+            window.location.href = 'index.html';
+        }
+
+        // Initialize display from storage if redirected here
+        const storedResults = sessionStorage.getItem('detectionResults');
+        if (storedResults) {
+            const data = JSON.parse(storedResults);
+            // This relies on showResult being globally available from script.js
+            // However, script.js is designed for upload.html flow mainly.
+            // Ideally we separate logic, but for now we'll rely on the user flow coming from upload.html which handles the fetch and DOM update directly if we are on the same page (single page app style) or passing data.
+            // Our script.js handles "showResult" but it targets elements on the current page.
+            if (typeof showResult === 'function') {
+                showResult(data);
+            }
+        }
+    </script>
+    <!-- Team Footer -->
+    <footer class="team-footer">
+        <div class="footer-divider"></div>
+        <div class="footer-content">
+            <h2 class="team-name">Bug Hunterx</h2>
+            <h3>Built by</h3>
+            <div class="team-members">
+                <div class="member">
+                    <span class="name">Mohammed Meraj Uddin</span>
+                    <a href="https://www.linkedin.com/in/merajuddin-0751a6396" target="_blank"
+                        aria-label="LinkedIn for Mohammed Meraj Uddin">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                </div>
+                <div class="member">
+                    <span class="name">Mohd Basheer Ahmed</span>
+                    <a href="https://www.linkedin.com/in/mohd-basheer-ahmed-5247593a6" target="_blank"
+                        aria-label="LinkedIn for Mohd Basheer Ahmed">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                </div>
+            </div>
+            <p class="footer-note">Responsive UI • Optimized for all screen sizes</p>
+        </div>
+    </footer>
+</body>
+
+</html>
