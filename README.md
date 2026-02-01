@@ -1,3 +1,12 @@
+---
+title: AI Voice Detection
+emoji: 🎙️
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+---
+
 # AI Voice Detection System
 
 **Production-ready system to detect AI-generated vs human voices using audio forensic features**
