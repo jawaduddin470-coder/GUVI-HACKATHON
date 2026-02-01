@@ -10,11 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          fetch-depth: 0
-          lfs: true
-      - name: Push to Hub
+          python-version: '3.9'
+          
+      - name: Install dependencies
+        run: pip install huggingface_hub
+        
+      - name: Run Upload Script
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: |
-          git push --force https://udidin:$HF_TOKEN@huggingface.co/spaces/BugHu/voice-detector main
+        run: python upload_to_hf.py
