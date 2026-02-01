@@ -14,8 +14,9 @@ services:
         sync: false
 
   # Frontend Static Site
-  - type: static
+  - type: web
     name: ai-voice-detector-ui
+    runtime: static
     buildCommand: "" # No build step needed for vanilla HTML/JS
     staticPublishPath: frontend
     envVars:
