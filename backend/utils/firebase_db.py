@@ -38,9 +38,23 @@ class FirebaseManager:
             else:
                 # Initialize Firebase with service account
                 json_creds = os.getenv('FIREBASE_CREDENTIALS_JSON')
+                b64_creds = os.getenv('FIREBASE_CREDENTIALS_BASE64')
                 
-                if json_creds:
-                    # Load from environment variable (for Render/HuggingFace)
+                cred_dict = None
+                
+                if b64_creds:
+                    # Robust Base64 decoding
+                    import base64
+                    import json
+                    try:
+                        json_str = base64.b64decode(b64_creds).decode('utf-8')
+                        cred_dict = json.loads(json_str)
+                        logger.info("Loaded credentials from FIREBASE_CREDENTIALS_BASE64")
+                    except Exception as e:
+                        logger.error(f"Failed to decode base64 credentials: {e}")
+
+                if not cred_dict and json_creds:
+                    # Fallback to JSON parsing with aggressive cleaning
                     import json
                     try:
                         cred_dict = json.loads(json_creds)
@@ -73,11 +87,17 @@ class FirebaseManager:
 
                             cred_dict['private_key'] = key
                             
-                        cred = credentials.Certificate(cred_dict)
-                        logger.info("Loaded Firebase credentials from environment variable")
+                        logger.info("Loaded Firebase credentials from FIREBASE_CREDENTIALS_JSON")
                     except json.JSONDecodeError as e:
                         logger.error(f"Failed to parse FIREBASE_CREDENTIALS_JSON: {e}")
-                        return False
+
+                if cred_dict:
+                    try:
+                        cred = credentials.Certificate(cred_dict)
+                        self.app = firebase_admin.initialize_app(cred)
+                        logger.info("Initialized new Firebase app")
+                    except Exception as e:
+                        logger.error(f"Failed to initialize Firebase app with credentials: {e}")
                 else:
                     # Load from file (local development)
                     cred_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), self.credentials_path)
