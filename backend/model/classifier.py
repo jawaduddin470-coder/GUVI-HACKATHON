@@ -4,10 +4,13 @@ Loads trained model and makes predictions
 """
 
 import os
+import logging
 import pickle
 import numpy as np
 from typing import Tuple, Dict, Any
 
+
+logger = logging.getLogger(__name__)
 
 class VoiceClassifier:
     """AI Voice Detection Classifier"""
@@ -24,9 +27,29 @@ class VoiceClassifier:
         model_path = os.path.join(model_dir, 'voice_classifier.pkl')
         scaler_path = os.path.join(model_dir, 'feature_scaler.pkl')
         
+        # Check if model files exist, if not, reconstruct them from embedded strings
+        if not os.path.exists(model_path) or not os.path.exists(scaler_path):
+            try:
+                # Try to import embedded models (generated to bypass git binary limits)
+                from model.embedded_models import CLASSIFIER_B64, SCALER_B64
+                import base64
+                
+                if CLASSIFIER_B64:
+                    with open(model_path, "wb") as f:
+                        f.write(base64.b64decode(CLASSIFIER_B64))
+                        
+                if SCALER_B64:
+                    with open(scaler_path, "wb") as f:
+                        f.write(base64.b64decode(SCALER_B64))
+            except ImportError:
+                # If embedded models are not found (e.g. strict training requirement)
+                logger.warning("Embedded models not found, checking for file existence...")
+            except Exception as e:
+                logger.error(f"Failed to reconstitute models: {e}")
+
         if not os.path.exists(model_path) or not os.path.exists(scaler_path):
             raise FileNotFoundError(
-                "Model files not found. Please run train_model.py first."
+                "Model files not found and could not be reconstituted. Please run train_model.py first."
             )
         
         with open(model_path, 'rb') as f:
