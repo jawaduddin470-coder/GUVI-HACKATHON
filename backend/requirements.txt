@@ -12,3 +12,4 @@ pydub
 pyjwt
 bcrypt
 httpx
+firebase-admin

@@ -21,7 +21,7 @@ from model.feature_extractor import FeatureExtractor
 from model.classifier import VoiceClassifier
 from utils.audio_processor import AudioProcessor
 from utils.explainer import VoiceExplainer
-from utils.db import db_manager
+from utils.firebase_db import firebase_db_manager as db_manager
 from utils.auth import auth_manager
 from utils.errors import VoiceDetectionError, create_error_response
 import re
@@ -196,12 +196,15 @@ async def startup_event():
     """Initialize database connection on startup"""
     logger.info("Starting AI Voice Detection API...")
     
-    # Connect to MongoDB
-    db_connected = db_manager.connect()
-    if db_connected:
-        logger.info("Database connected successfully")
-    else:
-        logger.warning("Database connection failed - predictions will not be logged")
+    # Connect to MongoDB (non-blocking)
+    try:
+        db_connected = db_manager.connect()
+        if db_connected:
+            logger.info("Database connected successfully")
+        else:
+            logger.warning("Database connection failed - predictions will not be logged")
+    except Exception as e:
+        logger.warning(f"Database connection error: {str(e)} - predictions will not be logged")
     
     logger.info("API ready to accept requests")
 
@@ -227,7 +230,7 @@ async def root():
 
 # Main detection endpoint
 @app.post("/detect-voice", response_model=VoiceDetectionResponse)
-async def detect_voice(
+def detect_voice(
     request: VoiceDetectionRequest,
     api_key: str = Header(None),
     authorization: str = Header(None)
@@ -369,7 +372,7 @@ async def detect_voice(
 
 # Statistics endpoint (optional, for monitoring)
 @app.get("/stats")
-async def get_statistics(api_key: str = Depends(verify_api_key)):
+def get_statistics(api_key: str = Depends(verify_api_key)):
     """Get prediction statistics"""
     try:
         stats = db_manager.get_statistics()
@@ -385,7 +388,7 @@ async def get_statistics(api_key: str = Depends(verify_api_key)):
 # ============ NEW: Authentication Routes ============
 
 @app.post("/auth/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
-async def register_user(request: UserRegisterRequest):
+def register_user(request: UserRegisterRequest):
     """
     Register a new user
     
@@ -447,7 +450,7 @@ async def register_user(request: UserRegisterRequest):
 
 
 @app.post("/auth/login", response_model=TokenResponse)
-async def login_user(request: UserLoginRequest):
+def login_user(request: UserLoginRequest):
     """
     Login user and return JWT token
     
@@ -496,7 +499,7 @@ async def login_user(request: UserLoginRequest):
 
 
 @app.get("/auth/me", response_model=UserResponse)
-async def get_current_user_info(current_user: dict = Depends(get_current_user)):
+def get_current_user_info(current_user: dict = Depends(get_current_user)):
     """
     Get current user information
     
@@ -517,7 +520,7 @@ async def get_current_user_info(current_user: dict = Depends(get_current_user)):
 # ============ NEW: Dashboard Routes ============
 
 @app.get("/dashboard/stats")
-async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
+def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
     """
     Get user dashboard statistics
     
@@ -551,7 +554,7 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
 
 
 @app.get("/dashboard/history")
-async def get_prediction_history(
+def get_prediction_history(
     current_user: dict = Depends(get_current_user),
     limit: int = 50
 ):
@@ -580,6 +583,9 @@ async def get_prediction_history(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve prediction history"
         )
+
+# Define frontend path first
+frontend_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
 
 # explicit routes for all html pages to ensure they work on HF
 @app.get("/login")
@@ -614,7 +620,6 @@ async def history_page():
 
 # Serve static files
 # This is placed at the end so it doesn't intercept API routes
-frontend_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
 if os.path.exists(frontend_path):
     # Mount frontend files at root
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
