@@ -44,6 +44,11 @@ class FirebaseManager:
                     import json
                     try:
                         cred_dict = json.loads(json_creds)
+                        
+                        # Fix potential newline escaping issues in private key
+                        if 'private_key' in cred_dict:
+                            cred_dict['private_key'] = cred_dict['private_key'].replace('\\n', '\n')
+                            
                         cred = credentials.Certificate(cred_dict)
                         logger.info("Loaded Firebase credentials from environment variable")
                     except json.JSONDecodeError as e:
