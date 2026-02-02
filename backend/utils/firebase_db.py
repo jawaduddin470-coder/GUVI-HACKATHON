@@ -41,13 +41,19 @@ class FirebaseManager:
                 
                 if json_creds:
                     # Load from environment variable (for Render/HuggingFace)
-                    import json
-                    try:
                         cred_dict = json.loads(json_creds)
                         
                         # Fix potential newline escaping issues in private key
                         if 'private_key' in cred_dict:
-                            cred_dict['private_key'] = cred_dict['private_key'].replace('\\n', '\n')
+                            key = cred_dict['private_key']
+                            # Remove surrounding quotes if accidentally included
+                            if key.startswith('"') and key.endswith('"'):
+                                key = key[1:-1]
+                            
+                            # Replace escaped newlines (handle multiple levels if necessary)
+                            key = key.replace('\\n', '\n')
+                            
+                            cred_dict['private_key'] = key
                             
                         cred = credentials.Certificate(cred_dict)
                         logger.info("Loaded Firebase credentials from environment variable")
