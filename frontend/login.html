@@ -202,7 +202,8 @@
             loginBtn.innerHTML = '<span class="loading-spinner"></span>Logging in...';
 
             try {
-                const url = `${API_URL}/auth/login`;
+                // Use relative path (no leading slash) to respect Space URL
+                const url = `${API_URL}auth/login`;
                 console.log(`Attempting to login: ${url}`);
 
                 const response = await fetch(url, {
