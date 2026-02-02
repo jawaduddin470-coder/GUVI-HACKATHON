@@ -48,13 +48,29 @@ class FirebaseManager:
                         # Fix potential newline escaping issues in private key
                         if 'private_key' in cred_dict:
                             key = cred_dict['private_key']
+                            
+                            # Clean up the key string
+                            key = key.strip()
+                            
                             # Remove surrounding quotes if accidentally included
                             if key.startswith('"') and key.endswith('"'):
                                 key = key[1:-1]
                             
-                            # Replace escaped newlines (handle multiple levels if necessary)
+                            # Replace escaped newlines (handle multiple levels)
+                            # First handle double escaping
+                            key = key.replace('\\\\n', '\n')
+                            # Then handle standard JSON escaping
                             key = key.replace('\\n', '\n')
                             
+                            # Ensure headers are correct
+                            if '-----BEGIN PRIVATE KEY-----' in key:
+                                # Ensure strict formatting if it looks like a PEM
+                                parts = key.split('-----BEGIN PRIVATE KEY-----')
+                                if len(parts) > 1:
+                                    content = parts[1].split('-----END PRIVATE KEY-----')[0]
+                                    content = content.replace(' ', '\n') # Fix spaces that should be newlines
+                                    key = f"-----BEGIN PRIVATE KEY-----\n{content.strip()}\n-----END PRIVATE KEY-----\n"
+
                             cred_dict['private_key'] = key
                             
                         cred = credentials.Certificate(cred_dict)
