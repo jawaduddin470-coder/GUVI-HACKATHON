@@ -37,12 +37,16 @@ class FirebaseManager:
                 logger.info("Using existing Firebase app")
             else:
                 # Initialize Firebase with service account
+                # Debug logging to see what's actually available
+                env_keys = [k for k in os.environ.keys() if k.startswith('FIREBASE_')]
+                logger.info(f"Available FIREBASE env vars: {env_keys}")
+
                 json_creds = os.getenv('FIREBASE_CREDENTIALS_JSON')
                 b64_creds = os.getenv('FIREBASE_CREDENTIALS_BASE64')
                 
                 cred_dict = None
                 
-                if b64_creds:
+                if b64_creds and b64_creds.strip():
                     # Robust Base64 decoding
                     import base64
                     import json
@@ -53,7 +57,7 @@ class FirebaseManager:
                     except Exception as e:
                         logger.error(f"Failed to decode base64 credentials: {e}")
 
-                if not cred_dict and json_creds:
+                if not cred_dict and json_creds and json_creds.strip():
                     # Fallback to JSON parsing with aggressive cleaning
                     import json
                     try:
