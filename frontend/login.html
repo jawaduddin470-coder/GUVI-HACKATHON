@@ -202,7 +202,10 @@
             loginBtn.innerHTML = '<span class="loading-spinner"></span>Logging in...';
 
             try {
-                const response = await fetch(`${API_URL}auth/login`, {
+                const url = `${API_URL}/auth/login`;
+                console.log(`Attempting to login: ${url}`);
+
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -210,10 +213,11 @@
                     body: JSON.stringify({ email, password })
                 });
 
+                console.log('Response status:', response.status);
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.message || data.detail?.message || 'Login failed');
+                    throw new Error(data.message || data.detail?.message || `Login failed (${response.status})`);
                 }
 
                 // Store token and user info
@@ -232,12 +236,13 @@
 
             } catch (error) {
                 console.error('Login error:', error);
-                errorMessage.textContent = error.message;
+                // Show DETAILED error for debugging
+                errorMessage.innerHTML = `<strong>Error:</strong> ${error.message}<br><small>URL: ${API_URL}/auth/login</small>`;
                 errorMessage.style.display = 'block';
 
                 // Re-enable button
                 loginBtn.disabled = false;
-                loginBtn.innerHTML = 'Login';
+                loginBtn.innerHTML = 'Login to Account';
             }
         });
     </script>
