@@ -31,12 +31,13 @@ class FirebaseManager:
     def connect(self):
         """Establish connection to Firebase Firestore"""
         try:
-            # Check if Firebase app is already initialized
-            if firebase_admin._apps:
+            # Robust initialization pattern: Try to get app, if fails, initialize it.
+            try:
                 self.app = firebase_admin.get_app()
                 logger.info("Using existing Firebase app")
-            else:
-                # Initialize Firebase with service account
+            except ValueError:
+                # App not returned by get_app(), try to initialize
+                
                 # Debug logging to see what's actually available
                 env_keys = [k for k in os.environ.keys() if k.startswith('FIREBASE_')]
                 logger.info(f"Available FIREBASE env vars: {env_keys}")
@@ -98,10 +99,16 @@ class FirebaseManager:
                 if cred_dict:
                     try:
                         cred = credentials.Certificate(cred_dict)
-                        self.app = firebase_admin.initialize_app(cred)
-                        logger.info("Initialized new Firebase app")
+                        # Try to initialize, but handle race conditions where it might have just been created
+                        try:
+                            self.app = firebase_admin.initialize_app(cred)
+                            logger.info("Initialized new Firebase app")
+                        except ValueError:
+                             self.app = firebase_admin.get_app()
+                             logger.info("Using existing Firebase app (caught race condition)")
                     except Exception as e:
                         logger.error(f"Failed to initialize Firebase app with credentials: {e}")
+                        return False
                 else:
                     # Load from file (local development)
                     cred_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), self.credentials_path)
@@ -111,13 +118,17 @@ class FirebaseManager:
                         return False
                     
                     cred = credentials.Certificate(cred_path)
-                    logger.info(f"Loaded Firebase credentials from file: {self.credentials_path}")
+                    try:
+                        self.app = firebase_admin.initialize_app(cred)
+                        logger.info(f"Loaded Firebase credentials from file: {self.credentials_path}")
+                    except ValueError:
+                        self.app = firebase_admin.get_app()
+                        logger.info("Using existing Firebase app (local)")
 
-                self.app = firebase_admin.initialize_app(cred)
-                logger.info("Initialized new Firebase app")
-            
-            # Get Firestore client
-            self.db = firestore.client()
+            # Get Firestore client explicitly using the app we have
+            logger.info("Getting Firestore client...")
+            self.db = firestore.client(app=self.app)
+            logger.info("Firestore client created")
             
             # Test connection by attempting to read from a collection
             # This will create the collection if it doesn't exist
@@ -126,6 +137,11 @@ class FirebaseManager:
             
             logger.info("Successfully connected to Firebase Firestore")
             return True
+            
+        except Exception as e:
+            logger.warning(f"Failed to connect to Firebase: {str(e)}")
+            logger.warning("Server will continue without database connection")
+            return False
             
         except Exception as e:
             logger.warning(f"Failed to connect to Firebase: {str(e)}")
