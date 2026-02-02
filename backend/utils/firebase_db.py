@@ -41,6 +41,8 @@ class FirebaseManager:
                 
                 if json_creds:
                     # Load from environment variable (for Render/HuggingFace)
+                    import json
+                    try:
                         cred_dict = json.loads(json_creds)
                         
                         # Fix potential newline escaping issues in private key
