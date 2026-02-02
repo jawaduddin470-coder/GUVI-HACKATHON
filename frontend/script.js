@@ -219,7 +219,7 @@ async function analyzeAudio() {
             headers['api-key'] = 'your-secret-api-key-here';
         }
 
-        const response = await fetch(`${API_BASE_URL}/detect-voice`, {
+        const response = await fetch(`${API_BASE_URL}detect-voice`, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({
