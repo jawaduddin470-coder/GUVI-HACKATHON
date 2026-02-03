@@ -60,40 +60,6 @@
             border-color: #4a90e2;
         }
 
-        .password-strength {
-            margin-top: 8px;
-            font-size: 12px;
-        }
-
-        .strength-bar {
-            height: 4px;
-            background: #e0e0e0;
-            border-radius: 2px;
-            margin-top: 4px;
-            overflow: hidden;
-        }
-
-        .strength-fill {
-            height: 100%;
-            transition: width 0.3s, background-color 0.3s;
-            width: 0%;
-        }
-
-        .strength-weak {
-            background: #f44336;
-            width: 33%;
-        }
-
-        .strength-medium {
-            background: #ff9800;
-            width: 66%;
-        }
-
-        .strength-strong {
-            background: #4caf50;
-            width: 100%;
-        }
-
         .btn-primary {
             width: 100%;
             padding: 14px;
@@ -184,73 +150,124 @@
     </div>
     <div class="auth-container">
         <div class="auth-header">
+            <h1>🎤 Create Account</h1>
+            <p>Join us to detect AI-generated voices</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="your@email.com" required autocomplete="email">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Min 8 characters" required
+                    autocomplete="new-password" minlength="8">
+            </div>
+
+            <button type="submit" class="btn-primary" id="registerBtn">
+                Create Account
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account? <a href="login.html">Login</a>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '';
+
+        const registerForm = document.getElementById('registerForm');
+        const registerBtn = document.getElementById('registerBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Hide previous messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+
+            // Disable button and show loading
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<span class="loading-spinner"></span>Creating account...';
+
             try {
-            const url = `${API_URL}auth/register`;
+                const url = `${API_URL}auth/register`;
 
-            const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
-            });
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
 
-            const data = await response.json();
+                const data = await response.json();
 
-            if (!response.ok) {
-            throw new Error(data.message || data.detail?.message || 'Registration failed');
-            }
+                if (!response.ok) {
+                    throw new Error(data.message || data.detail?.message || 'Registration failed');
+                }
 
-            // Store token and user info
-            localStorage.setItem('access_token', data.access_token);
-            localStorage.setItem('user_email', data.user_email);
-            localStorage.setItem('api_key', data.api_key);
+                // Store token and user info
+                localStorage.setItem('access_token', data.access_token);
+                localStorage.setItem('user_email', data.user_email);
+                localStorage.setItem('api_key', data.api_key);
 
-            // Show success message
-            successMessage.textContent = 'Account created successfully! Redirecting...';
-            successMessage.style.display = 'block';
+                // Show success message
+                successMessage.textContent = 'Account created successfully! Redirecting...';
+                successMessage.style.display = 'block';
 
-            // Redirect to dashboard
-            setTimeout(() => {
-            window.location.href = 'dashboard.html';
-            }, 1500);
+                // Redirect to dashboard
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
 
             } catch (error) {
-            console.error('Registration error:', error);
-            errorMessage.textContent = error.message;
-            errorMessage.style.display = 'block';
+                console.error('Registration error:', error);
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
 
-            // Re-enable button
-            registerBtn.disabled = false;
-            registerBtn.innerHTML = 'Create Account';
+                // Re-enable button
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = 'Create Account';
             }
-            });
-            </script>
-            <!-- Team Footer -->
-            <footer class="team-footer">
-                <div class="footer-divider"></div>
-                <div class="footer-content">
-                    <h2 class="team-name">Bug Hunterx</h2>
-                    <h3>Built by</h3>
-                    <div class="team-members">
-                        <div class="member">
-                            <span class="name">Mohammed Meraj Uddin</span>
-                            <a href="https://www.linkedin.com/in/merajuddin-0751a6396" target="_blank"
-                                aria-label="LinkedIn for Mohammed Meraj Uddin">
-                                <i class="fab fa-linkedin"></i>
-                            </a>
-                        </div>
-                        <div class="member">
-                            <span class="name">Mohd Basheer Ahmed</span>
-                            <a href="https://www.linkedin.com/in/mohd-basheer-ahmed-5247593a6" target="_blank"
-                                aria-label="LinkedIn for Mohd Basheer Ahmed">
-                                <i class="fab fa-linkedin"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <p class="footer-note">Responsive UI • Optimized for all screen sizes</p>
+        });
+    </script>
+    <!-- Team Footer -->
+    <footer class="team-footer">
+        <div class="footer-divider"></div>
+        <div class="footer-content">
+            <h2 class="team-name">Bug Hunterx</h2>
+            <h3>Built by</h3>
+            <div class="team-members">
+                <div class="member">
+                    <span class="name">Mohammed Meraj Uddin</span>
+                    <a href="https://www.linkedin.com/in/merajuddin-0751a6396" target="_blank"
+                        aria-label="LinkedIn for Mohammed Meraj Uddin">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
                 </div>
-            </footer>
+                <div class="member">
+                    <span class="name">Mohd Basheer Ahmed</span>
+                    <a href="https://www.linkedin.com/in/mohd-basheer-ahmed-5247593a6" target="_blank"
+                        aria-label="LinkedIn for Mohd Basheer Ahmed">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                </div>
+            </div>
+            <p class="footer-note">Responsive UI • Optimized for all screen sizes</p>
+        </div>
+    </footer>
 </body>
 
 </html>

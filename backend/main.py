@@ -62,7 +62,14 @@ explainer = VoiceExplainer()
 # Request/Response models
 class VoiceDetectionRequest(BaseModel):
     """Request model for voice detection"""
-    audio_base64: str = Field(..., description="Base64 encoded MP3 audio")
+    audio_base64: Optional[str] = Field(None, description="Base64 encoded audio", alias="audio_base64")
+    audio_base64_format: Optional[str] = Field(None, description="Guvi tester field for base64 audio", alias="Audio Base64 Format")
+    language: Optional[str] = Field(None, alias="Language")
+    audio_format: Optional[str] = Field(None, alias="Audio Format")
+
+    class Config:
+        allow_population_by_field_name = True
+        extra = "allow"
 
 
 class ExplanationModel(BaseModel):
@@ -233,6 +240,7 @@ async def root():
 def detect_voice(
     request: VoiceDetectionRequest,
     api_key: str = Header(None),
+    x_api_key: str = Header(None),
     authorization: str = Header(None)
 ):
     """
@@ -269,12 +277,12 @@ def detect_voice(
                 )
             user_id = str(user['_id']) # Assuming _id is ObjectId and needs conversion
         
-        elif api_key:
+        elif api_key or x_api_key:
             # Check legacy API Key or user specific API Key
-            # For simplicity, if it matches env API_KEY or we valid it against DB
-            if api_key != API_KEY:
+            effective_key = api_key or x_api_key
+            if effective_key != API_KEY:
                 # Check if it's a user-specific API key
-                user = db_manager.get_user_by_api_key(api_key)
+                user = db_manager.get_user_by_api_key(effective_key)
                 if not user:
                     raise HTTPException(
                         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -291,7 +299,10 @@ def detect_voice(
 
         logger.info(f"Received voice detection request from user: {user_email}")
             
-        if not request.audio_base64:
+        # Get audio data from multiple possible field names
+        audio_data = request.audio_base64 or request.audio_base64_format
+        
+        if not audio_data:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=create_error_response("MISSING_AUDIO")
@@ -299,7 +310,7 @@ def detect_voice(
 
         # Step 1: Process audio
         logger.info("Processing audio...")
-        audio, sr = audio_processor.process_base64_audio(request.audio_base64)
+        audio, sr = audio_processor.process_base64_audio(audio_data)
         
         # Step 2: Extract features
         logger.info("Extracting features...")

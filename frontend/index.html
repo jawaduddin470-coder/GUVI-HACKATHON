@@ -29,65 +29,80 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Hero Section Content -->
+    <main class="container mx-auto px-6 py-12">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 tracking-tight"
+                style="color: var(--text-color);">
+                Verify Every <span class="gradient-text">Voice</span>
+            </h1>
+            <p class="text-lg text-gray-600 mb-10 max-w-2xl mx-auto" style="color: var(--text-muted);">
+                Protect yourself from deepfakes and AI voice clones. Our advanced forensic analysis detects
+                AI-generated audio with industry-leading precision.
+            </p>
 
-    <!-- Feature 1 -->
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-        <div class="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z">
-                </path>
-            </svg>
+            <div class="grid md:grid-cols-3 gap-8 mb-16">
+                <!-- Feature 1 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+                    style="background: var(--card-bg); border-color: var(--card-border);">
+                    <div class="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2" style="color: var(--text-color);">Fast & Accurate</h3>
+                    <p class="text-gray-600 text-sm" style="color: var(--text-muted);">Get results in seconds with high
+                        accuracy using trained ML models</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+                    style="background: var(--card-bg); border-color: var(--card-border);">
+                    <div class="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2" style="color: var(--text-color);">Explainable AI</h3>
+                    <p class="text-gray-600 text-sm" style="color: var(--text-muted);">Understand why a voice is
+                        classified with detailed explanations</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+                    style="background: var(--card-bg); border-color: var(--card-border);">
+                    <div class="bg-purple-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2" style="color: var(--text-color);">Multi-Language</h3>
+                    <p class="text-gray-600 text-sm" style="color: var(--text-muted);">Supports Tamil, English, Hindi,
+                        Malayalam, and Telugu</p>
+                </div>
+            </div>
+
+            <!-- CTA Button -->
+            <div class="mb-8">
+                <a href="upload.html"
+                    class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+                    Upload Audio File
+                    <svg class="inline-block w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Supported Formats -->
+            <div class="text-sm text-gray-500" style="color: var(--text-muted);">
+                <p>Supported format: MP3 • Maximum file size: 10MB</p>
+            </div>
         </div>
-        <h3 class="font-semibold text-gray-900 mb-2">Fast & Accurate</h3>
-        <p class="text-gray-600 text-sm">Get results in seconds with high accuracy using trained ML models</p>
-    </div>
-
-    <!-- Feature 2 -->
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-        <div class="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-                </path>
-            </svg>
-        </div>
-        <h3 class="font-semibold text-gray-900 mb-2">Explainable AI</h3>
-        <p class="text-gray-600 text-sm">Understand why a voice is classified with detailed explanations</p>
-    </div>
-
-    <!-- Feature 3 -->
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-        <div class="bg-purple-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129">
-                </path>
-            </svg>
-        </div>
-        <h3 class="font-semibold text-gray-900 mb-2">Multi-Language</h3>
-        <p class="text-gray-600 text-sm">Supports Tamil, English, Hindi, Malayalam, and Telugu</p>
-    </div>
-
-    </div>
-
-    <!-- CTA Button -->
-    <div class="mb-8">
-        <a href="upload.html"
-            class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
-            Upload Audio File
-            <svg class="inline-block w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-        </a>
-    </div>
-
-    <!-- Supported Formats -->
-    <div class="text-sm text-gray-500">
-        <p>Supported format: MP3 • Maximum file size: 10MB</p>
-    </div>
-
-    </div>
     </main>
 
     <!-- Team Footer -->
